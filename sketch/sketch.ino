@@ -10,7 +10,7 @@
 #define BRIGHTNESS 64
 #define JOY_DEAD_ZONE 10
 #define MAX_STROBE_SPEED 30
-#define MAX_JOY_SPEED 5
+#define MAX_JOY_SPEED 2
 
 class StrobeProvider {
 
