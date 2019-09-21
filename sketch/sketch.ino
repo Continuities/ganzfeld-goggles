@@ -10,6 +10,7 @@
 #define BRIGHTNESS 64
 #define JOY_DEAD_ZONE 10
 #define MAX_STROBE_SPEED 30
+#define MAX_JOY_SPEED 5
 
 class StrobeProvider {
 
@@ -89,8 +90,15 @@ void updateFromInputs() {
   digitalWrite(A_PIN, HIGH);
   digitalWrite(B_PIN, LOW);
   int slider = map(analogRead(INPUT_PIN), 18, 1024, 0, 100);
+  debugInputValues(joyX, joyY, slider);
+  
   strobe.setSpeed(map(slider, 0, 100, 0, MAX_STROBE_SPEED));
-  debugInputValues(joyX, joyY, strobe.getSpeed());
+  if (abs(joyX) > JOY_DEAD_ZONE) {
+    strobe.shiftBase(map(joyX, -100, 100, -MAX_JOY_SPEED, MAX_JOY_SPEED));
+  }
+  if (abs(joyY) > JOY_DEAD_ZONE) {
+    strobe.shiftDistance(map(joyY, -100, 100, -MAX_JOY_SPEED, MAX_JOY_SPEED));
+  }
 }
 
 void debugInputValues(int joyX, int joyY, int slider) {
@@ -123,14 +131,15 @@ void setup() {
 unsigned long lastStrobe = millis();
 bool isStrobed = false;
 void loop() {
-  updateFromInputs();
   if (strobe.getSpeed() > 0 && millis() - lastStrobe > 1000 / strobe.getSpeed()) {
     isStrobed = !isStrobed;
-    CHSV colour = isStrobed ? strobe.getSecond() : strobe.getFirst();
-    for (int i = 0; i < STRIP_LENGTH; i++) {
-      leds[i] = colour;
-    }
-    FastLED.show();
     lastStrobe = millis();
   }
+  updateFromInputs();
+  CHSV colour = isStrobed ? strobe.getSecond() : strobe.getFirst();
+  for (int i = 0; i < STRIP_LENGTH; i++) {
+    leds[i] = colour;
+  }
+  FastLED.show();
+  delay(FPS);
 }
