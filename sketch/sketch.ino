@@ -9,7 +9,7 @@
 #define SPEED 1
 #define BRIGHTNESS 64
 #define JOY_DEAD_ZONE 10
-#define MAX_STROBE_SPEED 30
+#define MAX_STROBE_SPEED 40
 #define MAX_JOY_SPEED 2
 
 class StrobeProvider {
@@ -83,13 +83,13 @@ StrobeProvider strobe = StrobeProvider();
 void updateFromInputs() {
   digitalWrite(A_PIN, LOW);
   digitalWrite(B_PIN, LOW);
-  int joyX = map(analogRead(INPUT_PIN), 18, 1024, -100, 100);
+  int slider = map(analogRead(INPUT_PIN), 18, 1024, 100, 0);
   digitalWrite(A_PIN, LOW);
   digitalWrite(B_PIN, HIGH);
   int joyY = map(analogRead(INPUT_PIN), 18, 1024, -100, 100);
   digitalWrite(A_PIN, HIGH);
   digitalWrite(B_PIN, LOW);
-  int slider = map(analogRead(INPUT_PIN), 18, 1024, 0, 100);
+  int joyX = map(analogRead(INPUT_PIN), 18, 1024, -100, 100);
   debugInputValues(joyX, joyY, slider);
   
   strobe.setSpeed(map(slider, 0, 100, 0, MAX_STROBE_SPEED));
